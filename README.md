@@ -213,3 +213,53 @@ end
 
 >> user.full_name.split == user.alphabetical_name.split(', ').reverse
 => true
+
+<h2>Exercises 6.1.1</h2>
+
+<b>1. Rails uses a file called schema.rb in the db/ directory to keep track of the structure of the database (called the schema, hence the filename). Examine your local copy of db/schema.rb and compare its contents to the migration code in Listing 6.2.</b>
+
+The file schema.rb defines the overall structure of the database and the version of each migration, based on model changings. On the other hand, the migration file is the actual ruby code that will create or change the database.
+
+<b>2. Most migrations (including all the ones in this tutorial) are reversible, which means we can “migrate down” and undo them with a single command, called db:rollback:
+  $ rails db:rollback
+After running this command, examine db/schema.rb to confirm that the rollback was successful. (See Box 3.1 for another technique useful for reversing migrations.) Under the hood, this command executes the drop_table command to remove the users table from the database. The reason this works is that the change method knows that drop_table is the inverse of create_table, which means that the rollback migration can be easily inferred. In the case of an irreversible migration, such as one to remove a database column, it is necessary to define separate up and down methods in place of the single change method. Read about migrations in the Rails Guides for more information.</b>
+
+Yes, it returned to version 0.
+
+<b>3. Re-run the migration by executing rails db:migrate again. Confirm that the contents of db/schema.rb have been restored.</b>
+
+All contents were restored.
+
+</h2>Exercises 6.2.2</h2>
+
+<b>1. Make a new user called u and confirm that it’s initially invalid. What are the full error messages?</b>
+
+>> u.errors.full_messages
+=> ["Name can't be blank", "Email can't be blank"]
+
+<b>2. Confirm that u.errors.messages is a hash of errors. How would you access just the email errors?</b>
+
+>> u.errors[:email]
+=> ["can't be blank"]
+
+<h2>Exercises 6.3.2</h2>
+
+<b>1. Confirm that a user with valid name and email still isn’t valid overall.</b>
+
+Its not valid indeed.
+
+<b>2. What are the error messages for a user with no password?</b>
+
+>> u.errors.full_messages
+=> ["Password can't be blank"]
+
+<h2>Exercises 6.3.3</h2>
+
+<b>1. Confirm that a user with valid name and email but a too-short password isn’t valid.</b>
+
+Confirmed sir!
+
+<b>2. What are the associated error messages?</b>
+
+>> u.errors.full_messages
+=> ["Password is too short (minimum is 6 characters)"]
