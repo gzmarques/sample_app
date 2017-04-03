@@ -183,6 +183,7 @@ User < ApplicationRecord < ActiveRecord::Base < Object < BasicObject
 
 <b>1. In the example User class, change from name to separate first and last name attributes, and then add a method called full_name that returns the first and last names separated by a space. Use it to replace the use of name in the formatted email method.</b>
 
+```ruby
 class User
   attr_accessor :first_name, :last_name, :email
 
@@ -199,18 +200,15 @@ class User
   def full_name
     "#{@first_name} #{@last_name}"
   end
-
-  def alphabetical_name
-    "#{@last_name}, #{@first_name}"
-  end
-ends
+end
+```
 
 <b>2. Add a method called alphabetical_name that returns the last name and first name separated by comma-space.</b>
-
+```ruby
 def alphabetical_name
   "#{@last_name}, #{@first_name}"
 end
-
+```
 <b>3. Verify that full_name.split is the same as alphabetical_name.split(’, ’).reverse.</b>
 
 >> user.full_name.split == user.alphabetical_name.split(', ').reverse
