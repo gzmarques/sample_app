@@ -320,7 +320,7 @@ parameters: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
 
 Basically the same layout
 
-<b>2. Put the debugger in the User new action and hit /users/new. What is the value of @user?</b<
+<b>2. Put the debugger in the User new action and hit /users/new. What is the value of @user?</b>
 
 @user is nil
 
@@ -468,3 +468,14 @@ Test gets red, because the user don't get logged in after the sign up.
 <b>By using your text editor’s ability to comment out code, toggle back and forth between commenting out code in Listing 8.25 and confirm that the test suite toggles between red and green. (You will need to save the file between toggles.)</b>
 
 Yes, it does.
+
+<h1>Chapter 9</h1>
+<h2>Exercises 9.1.1</h2>
+
+<b>1. In the console, assign user to the first user in the database, and verify by calling it directly that the remember method works. How do remember_token and remember_digest compare?</b>
+
+They're much alike "key => hashed key". The remeber_token is the generated key and remember_digest is the store-ready hashed key.
+
+<b>2. In Listing 9.3, we defined the new token and digest class methods by explicitly prefixing them with User. This works fine and, because they are actually called using User.new_token and User.digest, it is probably the clearest way to define them. But there are two perhaps more idiomatically correct ways to define class methods, one slightly confusing and one extremely confusing. By running the test suite, verify that the implementations in Listing 9.4 (slightly confusing) and Listing 9.5 (extremely confusing) are correct. (Note that, in the context of Listing 9.4 and Listing 9.5, self is the User class, whereas the other uses of self in the User model refer to a user object instance. This is part of what makes them confusing.)</b>
+
+Works, and liked the second one better. Left that way in code, as it creates a pseudo-namespace inside the class with class methods, instead of laying down "User.method"s.
