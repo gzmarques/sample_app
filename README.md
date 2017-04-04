@@ -393,3 +393,78 @@ The code in Listing 7.30 also interpolate a raw symbol to print the keys of the 
 <b>4. Suppose we changed @user.save to false in Listing 7.28. How does this change verify that the assert_difference block is testing the right thing?</b>
 
 It will render 'new' every time, and the user is never saved to the database, because 'User.new' only instantiate the object in memory.
+
+<h1>Chapter 8</h1>
+<h2>Exercises 8.1.1</h2>
+
+<b>1. What is the difference between GET login_path and POST login_path?</b>
+
+GET login_path will send a request to retrieve the page underlying in the sessions#new controller. POST login_path will send the login data to the server, to proccess the authentication.
+
+<b>2. By piping the results of rails routes to grep, list all the routes associated with the Users resource. Do the same for Sessions. How many routes does each resource have? <i>Hint: Refer to the section on grep in Learn Enough Command Line to Be Dangerous.</i></b>
+
+´´´
+  signup GET    /signup(.:format)         users#new
+         POST   /signup(.:format)         users#create
+   users GET    /users(.:format)          users#index
+         POST   /users(.:format)          users#create
+new_user GET    /users/new(.:format)      users#new
+edit_user GET    /users/:id/edit(.:format) users#edit
+    user GET    /users/:id(.:format)      users#show
+         PATCH  /users/:id(.:format)      users#update
+         PUT    /users/:id(.:format)      users#update
+         DELETE /users/:id(.:format)      users#destroy
+´´´
+´´´
+login GET    /login(.:format)          sessions#new
+      POST   /login(.:format)          sessions#create
+logout DELETE /logout(.:format)         sessions#destroy
+´´´
+
+<h2>Exercises 8.1.2</h2>
+
+<b>1. Submissions from the form defined in Listing 8.4 will be routed to the Session controller’s create action. How does Rails know to do this? Hint: Refer to Table 8.1 and the first line of Listing 8.5.</h2>
+
+Because the HTTP Verb POST defined in the form method and the controller#action syntax used in rails routes.
+
+<h2>Exercises 8.2.1</h2>
+
+<b>1. Log in with a valid user and inspect your browser’s cookies. What is the value of the session content? <i>Hint: If you don’t know how to view your browser’s cookies, Google for it (Box 1.1).</i></b>
+
+The session value is eFVrREZqVGdEY1VBVFZocDFaWDVNUmlvdzN1NU0wU3Y4bmU3cWN3UzRCeVBZQ0NKTEdEa25Vb3hBVUtSOU1ucW91bi9QcDdXNDZ0bFcrWlhpYkJLNExmMmUvV0JDcE1tLzlQYkJ2RUZCcDVjVXJYTUFWeWhyZ2Z6UlVDQ1hSQlMwZUVRUWcyelBBb25EOFNUbGhZbnA0VHVXNnJnckdMRjNtaXlUK2UwdEE0PS0tcEVKTFR2TGxvVU1ZQVJKNGtkSWdVdz09
+
+<b>2. What is the value of the Expires attribute from the previous exercise?</b>
+
+The value is "Session"
+
+<h2>Exercises 8.2.3</h2>
+
+<b>1. Confirm at the console that User.find_by(id: ...) returns nil when the corresponding user doesn’t exist.</h2>
+
+Yes, it does.
+
+<b>2. In a Rails console, create a session hash with key :user_id. By following the steps in Listing 8.17, confirm that the ||= operator works as required.</b>
+
+>> session = {}
+=> {}
+>> session[:user_id] = nil
+=> nil
+>> @current_user ||= User.find_by(id: session[:user_id])
+  User Load (0.9ms)  SELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT ?  [["LIMIT", 1]]
+=> nil
+>> session[:user_id]= User.first.id
+  User Load (0.4ms)  SELECT  "users".* FROM "users" ORDER BY "users"."id" ASC LIMIT ?  [["LIMIT", 1]]
+=> 1
+>> @current_user ||= User.find_by(id: session[:user_id])
+  User Load (0.3ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
+=> #<User id: 1, name: "Rails Tutorial", email: "example@railstutorial.org", created_at: "2017-04-04 00:10:07", updated_at: "2017-04-04 00:10:07", password_digest: "$2a$10$3yYT4CWiMnAzgb7Ew/dxjurZU8Tu7VXKkRs00cB6eWu...">
+
+<h2>Exercises 8.2.5</h2>
+
+<b>1. Is the test suite red or green if you comment out the log_in line in Listing 8.25?</b>
+
+Test gets red, because the user don't get logged in after the sign up.
+
+<b>By using your text editor’s ability to comment out code, toggle back and forth between commenting out code in Listing 8.25 and confirm that the test suite toggles between red and green. (You will need to save the file between toggles.)</b>
+
+Yes, it does.
