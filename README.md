@@ -309,7 +309,7 @@ The time gets updated.
 
 <b>1. With the debugger in the show action as in Listing 7.6, hit /users/1. Use puts to display the value of the YAML form of the params hash. <i>Hint: Refer to the relevant exercise in Section 7.1.1.1. How does it compare to the debug information shown by the debug method in the site template?</i></b>
 
-```YAML
+```
 (byebug) puts params.to_yaml
 --- !ruby/object:ActionController::Parameters
 parameters: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
