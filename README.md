@@ -423,7 +423,7 @@ logout DELETE /logout(.:format)         sessions#destroy
 
 <h2>Exercises 8.1.2</h2>
 
-<b>1. Submissions from the form defined in Listing 8.4 will be routed to the Session controller’s create action. How does Rails know to do this? Hint: Refer to Table 8.1 and the first line of Listing 8.5.</h2>
+<b>1. Submissions from the form defined in Listing 8.4 will be routed to the Session controller’s create action. How does Rails know to do this? Hint: Refer to Table 8.1 and the first line of Listing 8.5.</b>
 
 Because the HTTP Verb POST defined in the form method and the controller#action syntax used in rails routes.
 
