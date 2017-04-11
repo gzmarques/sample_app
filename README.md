@@ -479,3 +479,91 @@ They're much alike "key => hashed key". The remeber_token is the generated key a
 <b>2. In Listing 9.3, we defined the new token and digest class methods by explicitly prefixing them with User. This works fine and, because they are actually called using User.new_token and User.digest, it is probably the clearest way to define them. But there are two perhaps more idiomatically correct ways to define class methods, one slightly confusing and one extremely confusing. By running the test suite, verify that the implementations in Listing 9.4 (slightly confusing) and Listing 9.5 (extremely confusing) are correct. (Note that, in the context of Listing 9.4 and Listing 9.5, self is the User class, whereas the other uses of self in the User model refer to a user object instance. This is part of what makes them confusing.)</b>
 
 Works, and liked the second one better. Left that way in code, as it creates a pseudo-namespace inside the class with class methods, instead of laying down "User.method"s.
+
+<h1>Chapter 10</h1>
+<h2>Exercises 10.1.4</h2>
+
+<b>1. Double-check that you can now make edits by making a few changes on the development version of the application.</b>
+
+OK
+
+<b>2. What happens when you change the email address to one without an associated Gravatar?</b>
+
+Gravatar sends a default image to fill the space.
+
+<h2>Exercises 10.2.1</h2>
+
+<b>1. As noted above, by default before filters apply to every action in a controller, which in our cases is an error (requiring, e.g., that users log in to hit the signup page, which is absurd). By commenting out the only: hash in Listing 10.15, confirm that the test suite catches this error.</b>
+
+The snippet
+´´´
+FAIL["test_invalid_signup_information", UsersSignupTest, 0.2184266750000461]
+ test_invalid_signup_information#UsersSignupTest (0.22s)
+        expecting <"users/new"> but rendering with <[]>
+        test/integration/users_signup_test.rb:12:in 'block in <class:UsersSignupTest>'
+´´´
+tells that the user was redirected while trying to reach the sign up page.
+
+<h2>Exercises 10.2.2</h2>
+
+<b>1. Why is it important to protect both the edit and update actions?</b>
+
+To prevent that any user (or even not a user!) to mess with someone's account.
+
+<b>2. Which action could you more easily test in a browser?</b>
+
+The edit action would be easier debugged, because it doesn't require to inspect the post params sent by the update action, only the access to the edit page.
+
+<h2>Exercises 10.2.3</h2>
+
+<b>1. Write a test to make sure that friendly forwarding only forwards to the given URL the first time. On subsequent login attempts, the forwarding URL should revert to the default (i.e., the profile page). <i>Hint: Add to the test in Listing 10.29 by checking for the right value of session[:forwarding_url].</i></b>
+
+Checked!
+
+<b>2. Put a debugger (Section 7.1.3) in the Sessions controller’s new action, then log out and try to visit /users/1/edit. Confirm in the debugger that the value of session[:forwarding_url] is correct. What is the value of request.get? for the new action? (Sometimes the terminal can freeze up or act strangely when you’re using the debugger; use your technical sophistication (Box 1.1) to resolve any issues.)</b>
+
+session[:forwarding_url]
+"http://localhost:3000/users/1/edit"
+
+request.get?
+true
+
+<h2>Exercises 10.3.3</h2>
+
+<b>1. Confirm at the console that setting the page to nil pulls out the first page of users.</b>
+
+Confirmed!
+
+<b>2. What is the Ruby class of the pagination object? How does it compare to the class of User.all?</b>
+
+The pagination object belongs to ActiveRecord_Relation, same as the User.all class.
+
+<h2>Exercises 10.3.4</h2>
+
+<b>1. By commenting out the pagination links in Listing 10.45, confirm that the test in Listing 10.48 goes red.</b>
+
+Red it is!
+
+<b>2. Confirm that commenting out only one of the calls to will_paginate leaves the tests green. How would you test for the presence of both sets of will_paginate links? <i>Hint: Use a count from Table 5.2.</i></b>
+
+Would be as follow:
+´´´
+assert_select 'div.pagination', count: 2
+´´´
+
+<h2>Exercises 10.4.2</h2>
+
+<b>1. As the admin user, destroy a few sample users through the web interface. What are the corresponding entries in the server log?</b>
+
+´´´
+Started DELETE "/users/3" for 127.0.0.1 at 2017-04-11 11:42:16 -0300
+Processing by UsersController#destroy as HTML
+  Parameters: {"authenticity_token"=>"dQCK6TKi6gectDc3ITlCo/4l2fhX5kch5jQL4jN1Dt2xxgYuCWblHJL/sxB1PCuB7K33C3jKpyArkxmgTgaALg==", "id"=>"3"}
+  User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
+  User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 3], ["LIMIT", 1]]
+   (0.2ms)  begin transaction
+  SQL (3.1ms)  DELETE FROM "users" WHERE "users"."id" = ?  [["id", 3]]
+   (7.9ms)  commit transaction
+Redirected to http://localhost:3000/users
+Completed 302 Found in 22ms (ActiveRecord: 11.3ms)
+´´´
