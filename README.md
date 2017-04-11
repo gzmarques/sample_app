@@ -275,7 +275,7 @@ action: about
 
 <b>2. In the Rails console, pull the first user out of the database and assign it to the variable user. What is the output of puts user.attributes.to_yaml? Compare this to using the y method via y user.attributes.</b>
 
-´´´
+```
 >> puts user.attributes.to_yaml
 ---
 id: 1
@@ -291,7 +291,7 @@ updated_at: !ruby/object:ActiveSupport::TimeWithZone
   zone: \*2
   time: \*3
 password_digest: "$2a$10$jOBwHT/S0ALnrJMM8dMnjO62dybjFgnW2zUM.gPMTG14/sXD/A2d6"
-´´´
+```
 
 Both commands return the same information
 
@@ -309,14 +309,14 @@ The time gets updated.
 
 <b>1. With the debugger in the show action as in Listing 7.6, hit /users/1. Use puts to display the value of the YAML form of the params hash. <i>Hint: Refer to the relevant exercise in Section 7.1.1.1. How does it compare to the debug information shown by the debug method in the site template?</i></b>
 
-´´´YAML
+```YAML
 (byebug) puts params.to_yaml
 --- !ruby/object:ActionController::Parameters
 parameters: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
   controller: users
   action: show
   id: '1'
-´´´
+```
 
 Basically the same layout
 
@@ -403,7 +403,7 @@ GET login_path will send a request to retrieve the page underlying in the sessio
 
 <b>2. By piping the results of rails routes to grep, list all the routes associated with the Users resource. Do the same for Sessions. How many routes does each resource have? <i>Hint: Refer to the section on grep in Learn Enough Command Line to Be Dangerous.</i></b>
 
-´´´
+```
   signup GET    /signup(.:format)         users#new
          POST   /signup(.:format)         users#create
    users GET    /users(.:format)          users#index
@@ -414,16 +414,16 @@ edit_user GET    /users/:id/edit(.:format) users#edit
          PATCH  /users/:id(.:format)      users#update
          PUT    /users/:id(.:format)      users#update
          DELETE /users/:id(.:format)      users#destroy
-´´´
-´´´
+```
+```
 login GET    /login(.:format)          sessions#new
       POST   /login(.:format)          sessions#create
 logout DELETE /logout(.:format)         sessions#destroy
-´´´
+```
 
 <h2>Exercises 8.1.2</h2>
 
-<b>1. Submissions from the form defined in Listing 8.4 will be routed to the Session controller’s create action. How does Rails know to do this? Hint: Refer to Table 8.1 and the first line of Listing 8.5.</h2>
+<b>1. Submissions from the form defined in Listing 8.4 will be routed to the Session controller’s create action. How does Rails know to do this? Hint: Refer to Table 8.1 and the first line of Listing 8.5.</b>
 
 Because the HTTP Verb POST defined in the form method and the controller#action syntax used in rails routes.
 
@@ -439,12 +439,13 @@ The value is "Session"
 
 <h2>Exercises 8.2.3</h2>
 
-<b>1. Confirm at the console that User.find_by(id: ...) returns nil when the corresponding user doesn’t exist.</h2>
+<b>1. Confirm at the console that User.find_by(id: ...) returns nil when the corresponding user doesn’t exist.</b>
 
 Yes, it does.
 
 <b>2. In a Rails console, create a session hash with key :user_id. By following the steps in Listing 8.17, confirm that the ||= operator works as required.</b>
 
+```
 >> session = {}
 => {}
 >> session[:user_id] = nil
@@ -458,6 +459,7 @@ Yes, it does.
 >> @current_user ||= User.find_by(id: session[:user_id])
   User Load (0.3ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
 => #<User id: 1, name: "Rails Tutorial", email: "example@railstutorial.org", created_at: "2017-04-04 00:10:07", updated_at: "2017-04-04 00:10:07", password_digest: "$2a$10$3yYT4CWiMnAzgb7Ew/dxjurZU8Tu7VXKkRs00cB6eWu...">
+```
 
 <h2>Exercises 8.2.5</h2>
 
@@ -496,12 +498,12 @@ Gravatar sends a default image to fill the space.
 <b>1. As noted above, by default before filters apply to every action in a controller, which in our cases is an error (requiring, e.g., that users log in to hit the signup page, which is absurd). By commenting out the only: hash in Listing 10.15, confirm that the test suite catches this error.</b>
 
 The snippet
-´´´
+```
 FAIL["test_invalid_signup_information", UsersSignupTest, 0.2184266750000461]
  test_invalid_signup_information#UsersSignupTest (0.22s)
         expecting <"users/new"> but rendering with <[]>
         test/integration/users_signup_test.rb:12:in 'block in <class:UsersSignupTest>'
-´´´
+```
 tells that the user was redirected while trying to reach the sign up page.
 
 <h2>Exercises 10.2.2</h2>
@@ -547,15 +549,15 @@ Red it is!
 <b>2. Confirm that commenting out only one of the calls to will_paginate leaves the tests green. How would you test for the presence of both sets of will_paginate links? <i>Hint: Use a count from Table 5.2.</i></b>
 
 Would be as follow:
-´´´
+```
 assert_select 'div.pagination', count: 2
-´´´
+```
 
 <h2>Exercises 10.4.2</h2>
 
 <b>1. As the admin user, destroy a few sample users through the web interface. What are the corresponding entries in the server log?</b>
 
-´´´
+```
 Started DELETE "/users/3" for 127.0.0.1 at 2017-04-11 11:42:16 -0300
 Processing by UsersController#destroy as HTML
   Parameters: {"authenticity_token"=>"dQCK6TKi6gectDc3ITlCo/4l2fhX5kch5jQL4jN1Dt2xxgYuCWblHJL/sxB1PCuB7K33C3jKpyArkxmgTgaALg==", "id"=>"3"}
@@ -566,4 +568,4 @@ Processing by UsersController#destroy as HTML
    (7.9ms)  commit transaction
 Redirected to http://localhost:3000/users
 Completed 302 Found in 22ms (ActiveRecord: 11.3ms)
-´´´
+```
