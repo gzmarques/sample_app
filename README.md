@@ -799,7 +799,7 @@ Yes, it does. The values are the following:
 >> u.reset_sent_at
 => Fri, 14 Apr 2017 09:42:08 UTC +00:00
 ```
-<h2>Exercises 12.2.1</b>
+<h2>Exercises 12.2.1</h2>
 
 <b>1. Preview the email templates in your browser. What do the Date fields read for your previews?</b>
 
