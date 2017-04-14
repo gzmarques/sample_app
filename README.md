@@ -735,3 +735,20 @@ and the token is inserted in the URL as "Xt8CTrkQJq6_8EIeP--6ZA".
 >> u.activated?
 => true
 ```
+
+<h2>Exercises 11.4.1</h2>
+
+<b>1. Sign up for a new account in production. Did you get the email?</b>
+
+Yes!
+
+```
+from:	noreply@example.com via sendgrid.me
+to:	marquesg@alunos.utfpr.edu.br
+date:	Fri, Apr 14, 2017 at 5:44 AM
+subject:	Account activation
+signed-by:	sendgrid.me
+encryption:	Standard (TLS) Learn more
+```
+
+<b>2. Click on the link in the activation email to confirm that it works. What is the corresponding entry in the server log? Hint: Run heroku logs at the command line.</b>
