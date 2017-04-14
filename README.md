@@ -935,3 +935,49 @@ It's working, because the password_digest attribute has changed:
 >> u.password_digest
 => "$2a$10$bFt.ezWtiwiH/D8tFVFmv.q5UXWCtY.5As4Sgz.EHSYq7hePryxze"
 ```
+
+<h2>Exercises 12.4.1</h2>
+
+<b>1. Sign up for a new account in production. Did you get the email?</b>
+
+Yes
+```
+de:	noreply@example.com por  sendgrid.me
+para:	pollyana.leschuk@gmail.com
+data:	14 de abril de 2017 08:01
+assunto:	Account activation
+enviado por:	sendgrid.net
+assinado por:	sendgrid.me
+criptografia:	Padrão (TLS) Saiba mais
+```
+
+<b>2. Click on the link in the activation email to confirm that it works. What is the corresponding entry in the server log? Hint: Run heroku logs at the command line.</b>
+
+Logs are as follow:
+```
+2017-04-14T11:03:14.380717+00:00 heroku[router]: at=info method=GET path="/account_activations/QJI3oczDvCv3IeVgE124Sw/edit?email=pollyana.leschuk%40gmail.com" host=gzmarques-sample-app.herokuapp.com request_id=5818a3a8-d643-4ba2-9798-85e0a62cbc07 fwd="177.79.67.215" dyno=web.1 connect=0ms service=90ms status=302 bytes=955 protocol=https
+2017-04-14T11:03:14.291340+00:00 app[web.1]: I, [2017-04-14T11:03:14.291247 #6]  INFO -- : [5818a3a8-d643-4ba2-9798-85e0a62cbc07] Started GET "/account_activations/QJI3oczDvCv3IeVgE124Sw/edit?email=pollyana.leschuk%40gmail.com" for 177.79.67.215 at 2017-04-14 11:03:14 +0000
+2017-04-14T11:03:14.293158+00:00 app[web.1]: I, [2017-04-14T11:03:14.293088 #6]  INFO -- : [5818a3a8-d643-4ba2-9798-85e0a62cbc07] Processing by AccountActivationsController#edit as HTML
+2017-04-14T11:03:14.293256+00:00 app[web.1]: I, [2017-04-14T11:03:14.293197 #6]  INFO -- : [5818a3a8-d643-4ba2-9798-85e0a62cbc07]   Parameters: {"email"=>"pollyana.leschuk@gmail.com", "id"=>"QJI3oczDvCv3IeVgE124Sw"}
+2017-04-14T11:03:14.298011+00:00 app[web.1]: D, [2017-04-14T11:03:14.297950 #6] DEBUG -- : [5818a3a8-d643-4ba2-9798-85e0a62cbc07]   User Load (0.9ms)  SELECT  "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2  [["email", "pollyana.leschuk@gmail.com"], ["LIMIT", 1]]
+2017-04-14T11:03:14.372568+00:00 app[web.1]: D, [2017-04-14T11:03:14.372443 #6] DEBUG -- : [5818a3a8-d643-4ba2-9798-85e0a62cbc07]   SQL (1.9ms)  UPDATE "users" SET "activated" = 't', "activated_at" = '2017-04-14 11:03:14.369606' WHERE "users"."id" = $1  [["id", 103]]
+2017-04-14T11:03:14.373842+00:00 app[web.1]: D, [2017-04-14T11:03:14.373794 #6] DEBUG -- : [5818a3a8-d643-4ba2-9798-85e0a62cbc07]    (0.6ms)  BEGIN
+2017-04-14T11:03:14.376769+00:00 app[web.1]: D, [2017-04-14T11:03:14.376717 #6] DEBUG -- : [5818a3a8-d643-4ba2-9798-85e0a62cbc07]   SQL (0.8ms)  UPDATE "users" SET "activated_at" = $1, "updated_at" = $2 WHERE "users"."id" = $3  [["activated_at", 2017-04-14 11:03:14 UTC], ["updated_at", 2017-04-14 11:03:14 UTC], ["id", 103]]
+```
+
+<b>3. Are you able to successfully update your password?</b>
+
+Perfectly possible:
+```
+2017-04-14T11:10:24.196801+00:00 app[web.1]: I, [2017-04-14T11:10:24.196693 #10]  INFO -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2] Started PATCH "/password_resets/OfSOv4EwSmOhoNyLOEDOMg" for 177.79.67.215 at 2017-04-14 11:10:24 +0000
+2017-04-14T11:10:24.198346+00:00 app[web.1]: I, [2017-04-14T11:10:24.198280 #10]  INFO -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2] Processing by PasswordResetsController#update as HTML
+2017-04-14T11:10:24.198451+00:00 app[web.1]: I, [2017-04-14T11:10:24.198383 #10]  INFO -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2]   Parameters: {"utf8"=>"✓", "authenticity_token"=>"Xgx9Mkf8duxpJtra87h/qA2n1Godfaea/5CT09ek5FE0kgzuDnZwdz444MlFGcIedWfYQJGlloYQBeyZCouyow==", "email"=>"pollyana.leschuk@gmail.com", "user"=>{"password"=>"[FILTERED]", "password_confirmation"=>"[FILTERED]"}, "commit"=>"Update password", "id"=>"OfSOv4EwSmOhoNyLOEDOMg"}
+2017-04-14T11:10:24.223558+00:00 app[web.1]: D, [2017-04-14T11:10:24.223438 #10] DEBUG -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2]   User Load (1.3ms)  SELECT  "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2  [["email", "pollyana.leschuk@gmail.com"], ["LIMIT", 1]]
+2017-04-14T11:10:24.321463+00:00 app[web.1]: D, [2017-04-14T11:10:24.321358 #10] DEBUG -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2]    (2.0ms)  BEGIN
+2017-04-14T11:10:24.400625+00:00 app[web.1]: D, [2017-04-14T11:10:24.400505 #10] DEBUG -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2]   User Exists (1.2ms)  SELECT  1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER($1) AND ("users"."id" != $2) LIMIT $3  [["email", "pollyana.leschuk@gmail.com"], ["id", 103], ["LIMIT", 1]]
+2017-04-14T11:10:24.406108+00:00 app[web.1]: D, [2017-04-14T11:10:24.406022 #10] DEBUG -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2]   SQL (0.8ms)  UPDATE "users" SET "password_digest" = $1, "updated_at" = $2 WHERE "users"."id" = $3  [["password_digest", "$2a$10$lovTIdryEZ2XpcQGinNggeUWqhM0k0HiMFInlEIzMap4NYCqFTo2u"], ["updated_at", 2017-04-14 11:10:24 UTC], ["id", 103]]
+2017-04-14T11:10:24.408765+00:00 app[web.1]: D, [2017-04-14T11:10:24.408694 #10] DEBUG -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2]    (1.7ms)  COMMIT
+2017-04-14T11:10:24.411056+00:00 app[web.1]: D, [2017-04-14T11:10:24.410230 #10] DEBUG -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2]    (1.0ms)  BEGIN
+2017-04-14T11:10:24.413857+00:00 app[web.1]: D, [2017-04-14T11:10:24.413798 #10] DEBUG -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2]   SQL (1.0ms)  UPDATE "users" SET "reset_digest" = $1, "updated_at" = $2 WHERE "users"."id" = $3  [["reset_digest", nil], ["updated_at", 2017-04-14 11:10:24 UTC], ["id", 103]]
+2017-04-14T11:10:24.415936+00:00 app[web.1]: D, [2017-04-14T11:10:24.415868 #10] DEBUG -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2]    (1.6ms)  COMMIT
+```
