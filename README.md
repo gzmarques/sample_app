@@ -752,3 +752,17 @@ encryption:	Standard (TLS) Learn more
 ```
 
 <b>2. Click on the link in the activation email to confirm that it works. What is the corresponding entry in the server log? Hint: Run heroku logs at the command line.</b>
+
+```
+2017-04-14T08:57:31.651190+00:00 app[web.1]: I, [2017-04-14T08:57:31.651097 #6]  INFO -- : [581fc4de-1c69-441b-83d9-5d6586682a82] Processing by AccountActivationsController#edit as HTML
+2017-04-14T08:57:31.651285+00:00 app[web.1]: I, [2017-04-14T08:57:31.651232 #6]  INFO -- : [581fc4de-1c69-441b-83d9-5d6586682a82]   Parameters: {"email"=>"marquesg@alunos.utfpr.edu.br", "id"=>"uFI7jfOaY0lX1CDI4BPffw"}
+2017-04-14T08:57:31.833736+00:00 app[web.1]: D, [2017-04-14T08:57:31.833631 #6] DEBUG -- : [581fc4de-1c69-441b-83d9-5d6586682a82]   SQL (1.9ms)  UPDATE "users" SET "activated" = 't', "activated_at" = '2017-04-14 08:57:31.830099' WHERE "users"."id" = $1  [["id", 102]]
+2017-04-14T08:57:31.647368+00:00 app[web.1]: I, [2017-04-14T08:57:31.647281 #6]  INFO -- : [581fc4de-1c69-441b-83d9-5d6586682a82] Started GET "/account_activations/uFI7jfOaY0lX1CDI4BPffw/edit?email=marquesg%40alunos.utfpr.edu.br" for 177.79.71.91 at 2017-04-14 08:57:31 +0000
+2017-04-14T08:57:31.835660+00:00 app[web.1]: D, [2017-04-14T08:57:31.835589 #6] DEBUG -- : [581fc4de-1c69-441b-83d9-5d6586682a82]    (0.4ms)  BEGIN
+2017-04-14T08:57:31.661949+00:00 app[web.1]: D, [2017-04-14T08:57:31.661791 #6] DEBUG -- : [581fc4de-1c69-441b-83d9-5d6586682a82]   User Load (0.9ms)  SELECT  "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2  [["email", "marquesg@alunos.utfpr.edu.br"], ["LIMIT", 1]]
+2017-04-14T08:57:31.843202+00:00 app[web.1]: D, [2017-04-14T08:57:31.843127 #6] DEBUG -- : [581fc4de-1c69-441b-83d9-5d6586682a82]   SQL (2.0ms)  UPDATE "users" SET "activated_at" = $1, "updated_at" = $2 WHERE "users"."id" = $3  [["activated_at", 2017-04-14 08:57:31 UTC], ["updated_at", 2017-04-14 08:57:31 UTC], ["id", 102]]
+2017-04-14T08:57:31.855999+00:00 app[web.1]: I, [2017-04-14T08:57:31.855916 #6]  INFO -- : [581fc4de-1c69-441b-83d9-5d6586682a82] Redirected to https://gzmarques-sample-app.herokuapp.com/users/102
+2017-04-14T08:57:31.844911+00:00 app[web.1]: D, [2017-04-14T08:57:31.844858 #6] DEBUG -- : [581fc4de-1c69-441b-83d9-5d6586682a82]    (1.2ms)  COMMIT
+2017-04-14T08:57:31.856322+00:00 app[web.1]: I, [2017-04-14T08:57:31.856251 #6]  INFO -- : [581fc4de-1c69-441b-83d9-5d6586682a82] Completed 302 Found in 205ms (ActiveRecord: 7.0ms)
+2017-04-14T08:57:31.865738+00:00 heroku[router]: at=info method=GET path="/account_activations/uFI7jfOaY0lX1CDI4BPffw/edit?email=marquesg%40alunos.utfpr.edu.br" host=gzmarques-sample-app.herokuapp.com request_id=581fc4de-1c69-441b-83d9-5d6586682a82 fwd="177.79.71.91" dyno=web.1 connect=1ms service=213ms status=302 bytes=1037 protocol=https
+```
