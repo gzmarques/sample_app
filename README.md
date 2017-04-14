@@ -569,3 +569,169 @@ Processing by UsersController#destroy as HTML
 Redirected to http://localhost:3000/users
 Completed 302 Found in 22ms (ActiveRecord: 11.3ms)
 ```
+
+<h1>Chapter 11</h1>
+<h2>Exercises 11.1.1</h2>
+
+<b>1. Verify that the test suite is still green.</b>
+
+Green as grass.
+
+<b>2. Why does Table 11.2 list the \_url form of the named route instead of the \_path form? <i>Hint: We’re going to use it in an email.</i></b>
+
+Because the \_url form returns the absolute path, so a link in an external email can find the root of the app. The \_path url is a relative and therefore only works inside the app.
+
+<h2>Exercises 11.1.2</h2>
+
+<b>1. Verify that the test suite is still green after the changes made in this section.</b>
+
+Green as #00FF00
+
+<b>2. By instantiating a User object in the console, confirm that calling the create_activation_digest method raises a NoMethodError due to its being a private method. What is the value of the user’s activation digest?</b>
+
+```
+>> user.activation_digest
+=> "$2a$10$gBjsTye8Vt6olrYLnW0NdeokkFC6C0riNqQ9vjUras1203zVaDUNe"
+```
+
+<b>3. In Listing 6.34, we saw that email downcasing can be written more simply as email.downcase! (without any assignment). Make this change to the downcase_email method in Listing 11.3 and verify by running the test suite that it works.</b>
+
+workworkwork
+
+<h2>Exercises 11.2.1</h2>
+
+<b>1. At the console, verify that the escape method in the CGI module escapes out the email address as shown in Listing 11.15. What is the escaped value of the string "Don’t panic!"?</b>
+
+```
+>> CGI.escape("Don't panic!")
+=> "Don%27t+panic%21"
+```
+
+<h2>Exercises 11.2.2</h2>
+
+<b>1. Preview the email templates in your browser. What do the Date fields read for your previews?</b>
+
+It reads the moment date.
+
+<h2>Exercises 11.2.4</h2>
+
+<b>1. Sign up as a new user and verify that you’re properly redirected. What is the content of the generated email in the server log? What is the value of the activation token?</b>
+
+Properly redirected with flash message.
+Activation token is:
+```
+>> User.last.activation_digest
+  User Load (0.3ms)  SELECT  "users".* FROM "users" ORDER BY "users"."id" DESC LIMIT ?  [["LIMIT", 1]]
+=> "$2a$10$YltIDlxAj6pPQLraevqdvu2.ggWE4R9tT5nnBLDcXOZtHc8lLLPgS"
+```
+and content is as follows:
+```
+UserMailer#account_activation: processed outbound mail in 10.3ms
+Sent mail to awws@fff.com (8.6ms)
+Date: Tue, 11 Apr 2017 16:49:43 -0300
+From: noreply@example.com
+To: awws@fff.com
+Message-ID: <58ed3357e6bbf_20a71545d847894c@TheCore.mail>
+Subject: Account activation
+Mime-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="--==_mimepart_58ed3357e5719_20a71545d847887a";
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+
+----==_mimepart_58ed3357e5719_20a71545d847887a
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hi fwafw,
+
+Welcome to the Sample App! Click on the link below to activate your account:
+
+https://localhost:3000/account_activations/4a4C3lJYoMUKdnvyOZ1X_w/edit?email=awws%40fff.com
+
+
+----==_mimepart_58ed3357e5719_20a71545d847887a
+Content-Type: text/html;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+      /* Email styles need to be inline */
+    </style>
+  </head>
+
+  <body>
+    <h1>Sample App</h1>
+
+<p>Hi fwafw,</p>
+
+<p>
+Welcome to the Sample App! Click on the link below to activate your account:
+</p>
+
+<a href="https://localhost:3000/account_activations/4a4C3lJYoMUKdnvyOZ1X_w/edit?email=awws%40fff.com">Activate</a>
+
+  </body>
+</html>
+
+----==_mimepart_58ed3357e5719_20a71545d847887a--
+
+Redirected to http://localhost:3000/
+
+```
+
+<b>2. Verify at the console that the new user has been created but that it is not yet activated.</b>
+
+```
+>> User.last.activated?
+  User Load (0.3ms)  SELECT  "users".* FROM "users" ORDER BY "users"."id" DESC LIMIT ?  [["LIMIT", 1]]
+=> false
+```
+
+<h2>Exercises 11.3.1</h2>
+
+<b>1. Create and remember new user at the console. What are the user’s remember and activation tokens? What are the corresponding digests?</b>
+
+```
+>> u = User.create!(name: 'newuser', email: 'mail@mail.com', password: 'abc123', password_confirmation: 'abc123')
+
+>> u.remember
+
+>> u.remember_token
+=> "wpn0lVG7mr6dNFM5wnxDpw"
+
+>> u.remember_digest
+=> "$2a$10$7rwZm3wU6ea38QMr.44FCO/2mNq/k0ieqtcBdmn/ctjOlOP134psu"
+```
+
+<b>2. Using the generalized authenticated? method from Listing 11.26, verify that the user is authenticated according to both the remember token and the activation token.</b>
+
+```
+>> u.authenticated?(:remember, u.remember_token)
+=> true
+>> u.activated?
+=> false
+```
+
+<h2>Exercises 11.3.2</h2>
+
+<b>1. Paste in the URL from the email generated in Section 11.2.4. What is the activation token?</b>
+
+https://localhost:3000/account_activations/Xt8CTrkQJq6_8EIeP--6ZA/edit?email=ggg%40aaa.com
+
+and the token is inserted in the URL as "Xt8CTrkQJq6_8EIeP--6ZA".
+
+<b>2. Verify at the console that the User is authenticated according to the activation token in the URL from the previous exercise. Is the user now activated?</b>
+
+```
+>> u.authenticated?(:activation, "Xt8CTrkQJq6_8EIeP--6ZA")
+=> true
+>> u.activated?
+=> true
+```

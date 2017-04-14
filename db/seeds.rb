@@ -6,16 +6,20 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-User.create!(name:  "Example User",
-             email: "example@railstutorial.org",
-             password:              "foobar",
-             password_confirmation: "foobar",
-             admin: true)
+User.create!( name:  "Example User",
+              email: "example@railstutorial.org",
+              password:              "foobar",
+              password_confirmation: "foobar",
+              admin: true,
+              activated: true,
+              activated_at: Time.zone.now)
 
-User.create!(name:  "Guilherme Zacalusni Marques",
-            email: "gzmarques90@gmail.com",
-            password:              "abc123",
-            password_confirmation: "abc123")
+User.create!( name:  "Guilherme Zacalusni Marques",
+              email: "gzmarques90@gmail.com",
+              password:              "abc123",
+              password_confirmation: "abc123",
+              activated: true,
+              activated_at: Time.zone.now)
 
 99.times do |n|
   name  = Faker::Name.name
