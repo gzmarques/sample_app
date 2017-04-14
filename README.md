@@ -766,3 +766,172 @@ encryption:	Standard (TLS) Learn more
 2017-04-14T08:57:31.856322+00:00 app[web.1]: I, [2017-04-14T08:57:31.856251 #6]  INFO -- : [581fc4de-1c69-441b-83d9-5d6586682a82] Completed 302 Found in 205ms (ActiveRecord: 7.0ms)
 2017-04-14T08:57:31.865738+00:00 heroku[router]: at=info method=GET path="/account_activations/uFI7jfOaY0lX1CDI4BPffw/edit?email=marquesg%40alunos.utfpr.edu.br" host=gzmarques-sample-app.herokuapp.com request_id=581fc4de-1c69-441b-83d9-5d6586682a82 fwd="177.79.71.91" dyno=web.1 connect=1ms service=213ms status=302 bytes=1037 protocol=https
 ```
+
+<h1>Chapter 12</h1>
+<h2>Exercises 12.1.1</h2>
+
+<b>1. Verify that the test suite is still green.</b>
+
+Green as expected.
+
+<b>2. Why does Table 12.1 list the \_url form of the edit named route instead of the \_path form? Hint: The answer is the same as for the similar account activations exercise (Section 11.1.1.1).</b>
+
+Because as this link will be present inside the mail sent, it has to be accessed from outside the root of the app, therefore demanding a full absolute URL instead of a relative path.
+
+<h2>Exercises 12.1.2</h2>
+
+<b>1. Why does the form_for in Listing 12.4 use :password_reset instead of @password_reset?</b>
+
+Because @password_reset ships unused features to the form, as password_reset is not a model itself. Passing :password_reset allow us to control the url and free up the form to control table inheritance-oriented fields.
+
+<h2>Exercises 12.1.3</h2>
+
+<b>1. Submit a valid email address to the form shown in Figure 12.6. What error message do you get?</b>
+
+I got "wrong number of arguments (given 1, expected 0)"
+
+<b>2. Confirm at the console that the user in the previous exercise has valid reset_digest and reset_sent_at attributes, despite the error. What are the attribute values?</b>
+
+Yes, it does. The values are the following:
+```
+>> u.reset_digest
+=> "$2a$10$byYAECQudzX0BZ/Sqxx0ZO2BS3TISy7y7bSQTM7aCRMPDa/NxZUVC"
+>> u.reset_sent_at
+=> Fri, 14 Apr 2017 09:42:08 UTC +00:00
+```
+<h2>Exercises 12.2.1</b>
+
+<b>1. Preview the email templates in your browser. What do the Date fields read for your previews?</b>
+
+It shows the present date.
+
+<b>2. Submit a valid email address to the new password reset form. What is the content of the generated email in the server log?</b>
+
+The content is as follow:
+```
+Started POST "/password_resets" for 127.0.0.1 at 2017-04-14 07:06:51 -0300
+Processing by PasswordResetsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"y5QnSEvEfcDILNo9nZ3G0PiMLLdDL4UnUuwzZMTHmIkPUquPcABy28ZnXhrJmK/y6gQCRGwDZSafSyEmubQWeg==", "password_reset"=>"[FILTERED]", "commit"=>"Submit"}
+  User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."email" = ? LIMIT ?  [["email", "gzmarques90@gmail.com"], ["LIMIT", 1]]
+   (0.1ms)  begin transaction
+  SQL (0.5ms)  UPDATE "users" SET "reset_digest" = ?, "updated_at" = ? WHERE "users"."id" = ?  [["reset_digest", "$2a$10$bXQr5WT/nTQCw.X1CFlX7el6wrurH.Hqo9clWkREdHx4eObXIKL9e"], ["updated_at", 2017-04-14 10:06:51 UTC], ["id", 2]]
+   (5.5ms)  commit transaction
+   (0.1ms)  begin transaction
+  SQL (2.0ms)  UPDATE "users" SET "updated_at" = ?, "reset_sent_at" = ? WHERE "users"."id" = ?  [["updated_at", 2017-04-14 10:06:51 UTC], ["reset_sent_at", 2017-04-14 10:06:51 UTC], ["id", 2]]
+   (5.0ms)  commit transaction
+  Rendering user_mailer/password_reset.html.erb within layouts/mailer
+  Rendered user_mailer/password_reset.html.erb within layouts/mailer (4.4ms)
+  Rendering user_mailer/password_reset.text.erb within layouts/mailer
+  Rendered user_mailer/password_reset.text.erb within layouts/mailer (0.7ms)
+UserMailer#password_reset: processed outbound mail in 207.1ms
+Sent mail to gzmarques90@gmail.com (7.7ms)
+Date: Fri, 14 Apr 2017 07:06:52 -0300
+From: noreply@example.com
+To: gzmarques90@gmail.com
+Message-ID: <58f09f3cf65d_20472b50f84523c8@TheCore.mail>
+Subject: Password reset
+Mime-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="--==_mimepart_58f09f3ce7ea_20472b50f84522b7";
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+
+----==_mimepart_58f09f3ce7ea_20472b50f84522b7
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+To reset your password click the link below:
+
+https://localhost:3000/password_resets/P7f9bLWohoAA4ccnMhp8dw/edit?email=gzmarques90%40gmail.com
+
+This link will expire in two hours.
+
+If you did not request your password to be reset, please ignore this email and
+your password will stay as it is.
+
+
+----==_mimepart_58f09f3ce7ea_20472b50f84522b7
+Content-Type: text/html;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+      /* Email styles need to be inline */
+    </style>
+  </head>
+
+  <body>
+    <h1>Password reset</h1>
+
+<p>To reset your password click the link below:</p>
+
+<a href="https://localhost:3000/password_resets/P7f9bLWohoAA4ccnMhp8dw/edit?email=gzmarques90%40gmail.com">Reset password</a>
+
+<p>This link will expire in two hours.</p>
+
+<p>
+If you did not request your password to be reset, please ignore this email and
+your password will stay as it is.
+</p>
+
+  </body>
+</html>
+
+----==_mimepart_58f09f3ce7ea_20472b50f84522b7--
+
+Redirected to http://localhost:3000/
+Completed 302 Found in 324ms (ActiveRecord: 13.9ms)
+```
+
+<b>3. At the console, find the user object corresponding to the email address from the previous exercise and verify that it has valid reset_digest and reset_sent_at attributes.</b>
+
+Yes, it does, and with reset_sent_at updated:
+```
+>> u.reset_digest
+=> "$2a$10$bXQr5WT/nTQCw.X1CFlX7el6wrurH.Hqo9clWkREdHx4eObXIKL9e"
+>> u.reset_sent_at
+=> Fri, 14 Apr 2017 10:06:51 UTC +00:00
+```
+
+<h2>Exercises 12.2.2</h2>
+
+<b>1. Run just the mailer tests. Are they green?</b>
+
+Yes, as shown by the command $rails test:mailers
+
+<b>2. Confirm that the test goes red if you remove the second call to CGI.escape in Listing 12.12.</b>
+
+Yes, it's no more escaping the email to build the URL
+
+<h2>Exercises 12.3.1</h2>
+
+<b>1. Follow the link in the email from the server log in Section 12.2.1.1. Does it properly render the form as shown in Figure 12.11?</b>
+
+Yes, the form is properly rendered
+
+<b>2. What happens if you submit the form from the previous exercise?</b>
+
+Rails says there's no implemented update action in the controller
+
+<h2>Exercises 12.3.2</h2>
+
+<b>1. Follow the email link from Section 12.2.1.1 again and submit mismatched passwords to the form. What is the error message?</b>
+
+The error message is "Password confirmation doesn't match Password"
+
+<b>2. In the console, find the user belonging to the email link, and retrieve the value of the password_digest attribute. Now submit valid matching passwords to the form shown in Figure 12.12. Did the submission appear to work? How did it affect the value of password_digest? <i>Hint: Use user.reload to retrieve the new value.</i></b>
+
+It's working, because the password_digest attribute has changed:
+```
+>> u.password_digest
+=> "$2a$10$9rZqdQw/IIqd0Y8ZaLvmU.OCYWTk2u8EPSSVq7oFJRuw3PdxoSJDO"
+>> u.reload
+>> u.password_digest
+=> "$2a$10$bFt.ezWtiwiH/D8tFVFmv.q5UXWCtY.5As4Sgz.EHSYq7hePryxze"
+```
