@@ -981,3 +981,264 @@ Perfectly possible:
 2017-04-14T11:10:24.413857+00:00 app[web.1]: D, [2017-04-14T11:10:24.413798 #10] DEBUG -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2]   SQL (1.0ms)  UPDATE "users" SET "reset_digest" = $1, "updated_at" = $2 WHERE "users"."id" = $3  [["reset_digest", nil], ["updated_at", 2017-04-14 11:10:24 UTC], ["id", 103]]
 2017-04-14T11:10:24.415936+00:00 app[web.1]: D, [2017-04-14T11:10:24.415868 #10] DEBUG -- : [4607d1c7-fc08-45b9-a1d4-2edb6a5027e2]    (1.6ms)  COMMIT
 ```
+
+<h1>Chapter 13</h1>
+<h2>Exercises 13.1.1</h2>
+
+<b>1. Using Micropost.new in the console, instantiate a new Micropost object called micropost with content “Lorem ipsum” and user id equal to the id of the first user in the database. What are the values of the magic columns created_at and updated_at?</b>
+
+They're both nil
+```
+>> micropost.created_at
+=> nil
+>> micropost.updated_at
+=> nil
+```
+
+<b>2.What is micropost.user for the micropost in the previous exercise? What about micropost.user.name?</b>
+
+```
+>> micropost.user.name
+=> "Example User"
+```
+
+<b>3. Save the micropost to the database. What are the values of the magic columns now?</b>
+
+After saving, their values got set.
+```
+>> micropost.save
+>> micropost.created_at
+=> Fri, 14 Apr 2017 20:36:05 UTC +00:00
+>> micropost.updated_at
+=> Fri, 14 Apr 2017 20:36:05 UTC +00:00
+```
+
+<h2>Exercises 13.1.2</h2>
+
+<b>1. At the console, instantiate a micropost with no user id and blank content. Is it valid? What are the full error messages?</b>
+
+It's not valid, and messages are the following:
+```
+>> y m.errors.messages
+---
+:user:
+- must exist
+:user_id:
+- can't be blank
+:content:
+- can't be blank
+```
+
+<b>2. At the console, instantiate a second micropost with no user id and content that’s too long. Is it valid? What are the full error messages?</b>
+
+It's not valid either, and the error messages are:
+```
+>> y m2.errors.messages
+---
+:user:
+- must exist
+:user_id:
+- can't be blank
+:content:
+- is too long (maximum is 140 characters)
+```
+
+<h2>Exercises 13.1.3</h2>
+
+<b>1. Set user to the first user in the database. What happens when you execute the command micropost = user.microposts.create(content: "Lorem ipsum")?</b>
+
+The new micropost is saved to the database, vinculated to the first user, as shown in the micropost user_id attribute.
+
+<b>2. The previous exercise should have created a micropost in the database. Confirm this by running user.microposts.find(micropost.id). What if you write micropost instead of micropost.id?</b>
+
+Both commands works the same way, but the latter throws a deprecation warning when passing the instance instead of its id.
+
+<b>3. What is the value of user == micropost.user? How about user.microposts.first == micropost?</b>
+
+Both are true.
+
+<h2>Exercises 13.1.4</h2>
+
+<b>1. How does the value of Micropost.first.created_at compare to Micropost.last.created_at?</b>
+
+The first is newer than the last
+```
+>> Micropost.first.created_at
+=> Fri, 14 Apr 2017 21:05:26 UTC +00:00
+>> Micropost.last.created_at
+=> Fri, 14 Apr 2017 20:36:05 UTC +00:00
+```
+
+<b>2. What are the SQL queries for Micropost.first and Micropost.last? Hint: They are printed out by the console.</b>
+
+```
+>> Micropost.first
+  Micropost Load (0.5ms)  SELECT  "microposts".* FROM "microposts" ORDER BY "microposts"."created_at" DESC LIMIT ?  [["LIMIT", 1]]
+```
+```
+>> Micropost.last
+  Micropost Load (0.5ms)  SELECT  "microposts".* FROM "microposts" ORDER BY "microposts"."created_at" ASC LIMIT ?  [["LIMIT", 1]]
+```
+
+<b>3. Let user be the first user in the database. What is the id of its first micropost? Destroy the first user in the database using the destroy method, then confirm using Micropost.find that the user’s first micropost was also destroyed.</b>
+
+```
+>> user.microposts.first.id
+=> 2
+>> user.destroy
+=> ...
+>> Micropost.find(2)
+  ActiveRecord::RecordNotFound: Couldn't find Micropost with 'id'=2
+```
+
+<h2>Exercises 13.2.1</h2>
+
+<b>1. As mentioned briefly in Section 7.3.3, helper methods like time_ago_in_words are available in the Rails console via the helper object. Using helper, apply time_ago_in_words to 3.weeks.ago and 6.months.ago.</b>
+
+```
+>> helper.time_ago_in_words(3.weeks.ago)
+=> "21 days"
+>> helper.time_ago_in_words(6.months.ago)
+=> "6 months"
+```
+
+<b>2. What is the result of helper.time_ago_in_words(1.year.ago)?</b>
+
+```
+>> helper.time_ago_in_words(1.year.ago)
+=> "about 1 year"
+```
+
+<b>3. What is the Ruby class for a page of microposts? <i>Hint: Use the code in Listing 13.23 as your model, and call the class method on paginate with the argument page: nil.</i></b>
+
+```
+>> microposts.class
+=> Micropost::ActiveRecord_AssociationRelation
+```
+
+<h2>Exercises 13.2.2</h2>
+
+<b>1. See if you can guess the result of running (1..10).to_a.take(6). Check at the console to see if your guess is right.</b>
+
+Guess it returns the six first numbers in the range from 1 to 10. Oh! That's what happened! :)
+
+<b>2. Is the to_a method in the previous exercise necessary?</b>
+
+Not really. As the class Range has included the Enumerable Module, it can be passed to take method as an Enum, returning an array.
+
+<b>3. Faker has a huge number of occasionally amusing applications. By consulting the Faker documentation, learn how to print out a fake university name, a fake phone number, a fake Hipster Ipsum sentence, and a fake Chuck Norris fact.</b>
+
+Faker::University.name #=> "South Texas College"
+Faker::PhoneNumber.phone_number #=> "397.693.1309"
+Faker::Hipster.sentences(1, true) #=> ["Et sustainable optio aesthetic et."]
+Faker::ChuckNorris.fact #=> "Chuck Norris can solve the Towers of Hanoi in one move."
+
+<h2>Exercises 13.2.3</h2>
+
+<b>1. Comment out the application code needed to change the two ’h1’ lines in Listing 13.28 from green to red.</b>
+
+on app/views/users/show.html.erb:
+```
+<%#= gravatar_for @user %>
+<%#= @user.name %>
+```
+
+<b>2. Update Listing 13.28 to test that will_paginate appears only once. Hint: Refer to Table 5.2.</b>
+
+assert_select 'div.pagination', count: 1
+
+<h2>Exercises 13.3.1</h2>
+
+<b>1. Why is it a bad idea to leave a copy of logged_in_user in the Users controller?</b>
+
+Firstly, because of the need to avoid code repetition. Secondly, to avoid that any modification we need to do in the method be unique; if there's two methods with the same name doing opposite things, strange things can happen, since Ruby will replace the ApplicationController method when controlling users, but not when dealing with other controllers.
+
+<h2>Exercises 13.3.3</h2>
+
+<b>1. Use the newly created micropost UI to create the first real micropost. What are the contents of the INSERT command in the server log?</b>
+
+```
+INSERT INTO "microposts" ("content", "user_id", "created_at", "updated_at") VALUES (?, ?, ?, ?)  [["content", "oi"], ["user_id", 2], ["created_at", 2017-04-15 01:27:20 UTC], ["updated_at", 2017-04-15 01:27:20 UTC]]
+```
+
+<b>2. In the console, set user to the first user in the database. Confirm that the values of by Micropost.where("user_id = ?", user.id), user.microposts, and user.feed are all the same. <i>Hint: It’s probably easiest to compare directly using ==.</i></b>
+
+Confirmed!
+```
+>> Micropost.where("user_id = ?", user.id) == user.microposts
+=> true
+>> Micropost.where("user_id = ?", user.id) == user.feed
+=> true
+>> user.feed == user.microposts
+=> true
+```
+
+<h2>Exercises 13.3.4</h2>
+
+<b>1. Create a new micropost and then delete it. What are the contents of the DELETE command in the server log?</b>
+
+```
+DELETE FROM "microposts" WHERE "microposts"."id" = ?  [["id", 302]]
+```
+
+<b>2. Confirm directly in the browser that the line redirect_to request.referrer || root_url can be replaced with the line redirect_back(fallback_location: root_url). (This method was added in Rails 5.)</b>
+
+Yes, it does.
+
+<h2>Exercises 13.3.5</h2>
+
+<b>1. For each of the four scenarios indicated by comments in Listing 13.55 (starting with “Invalid submission”), comment out application code to get the corresponding test to red, then uncomment to get back to green.</b>
+
+<h3>Invalid submission</h3>
+on app/models/micropost.rb:
+```
+# validates :content, presence: true, length: { maximum: 140 }
+```
+
+<h3>Valid submission</h3>
+on app/controllers/micropost_controller.rb
+```
+def create
+  ...
+  @micropost = #current_user.microposts.build(micropost_params)
+```
+
+<h3>Delete post</h3>
+on app/controllers/micropost_controller.rb:
+```
+def destroy
+  @micropost#.destroy
+```
+
+<h3>Visit different user (no delete link)</h3>
+on app/views/microposts/\_micropost.html.erb:
+```
+<% #if current_user?(micropost.user) %>
+  <%= link_to "delete", micropost, method: :delete,
+                                   data: { confirm: "You sure?" } %>
+<% #end %>
+```
+
+<b>2. Add tests for the sidebar micropost count (including proper pluralization). Listing 13.57 will help get you started.</b>
+
+Tests added.
+
+<h2>Exercises 13.4.2</h2>
+
+<b>1. What happens if you try uploading an image bigger than 5 megabytes?</b>
+
+An alert pops up and prevents the upload.
+
+<b>2. What happens if you try uploading a file with an invalid extension?</b>
+
+An error is thrown and prevents the upload.
+
+<h2>Exercises 13.4.3</h2>
+
+<b>1. Upload a large image and confirm directly that the resizing is working. Does the resizing work even if the image isn’t square?</b>
+
+Yes, it works, as ImageMagick resizes the biggest dimension to the limit and scale the smallest dimension.
+
+<b>2. If you completed the image upload test in Listing 13.63, at this point your test suite may be giving you a confusing error message. Fix this issue by configuring CarrierWave to skip image resizing in tests using the initializer file shown in Listing 13.68.</b>
+
+Test were green anyway, but done :P

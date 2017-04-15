@@ -30,3 +30,10 @@ User.create!( name:  "Guilherme Zacalusni Marques",
                password:              password,
                password_confirmation: password)
 end
+
+users = User.order(:created_at).take(6)
+r = Random.new(1000)
+50.times do
+  content = Faker::Lorem.sentence(5)
+  users.each { |user| user.microposts.create!(content: content, created_at: r.rand(1000).minutes.ago) }
+end
