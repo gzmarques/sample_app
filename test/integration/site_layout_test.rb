@@ -23,6 +23,7 @@ class SiteLayoutTest < ActionDispatch::IntegrationTest
     assert_select "title", full_title("Sign up")
     log_in_as @user
     get root_path
+    assert_select 'div.stats'
     assert_select "a[href=?]", users_path
     assert_select "a[href=?]", edit_user_path(@user)
     assert_select "a[href=?]", logout_path

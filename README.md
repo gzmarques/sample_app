@@ -1191,12 +1191,14 @@ Yes, it does.
 
 <h3>Invalid submission</h3>
 on app/models/micropost.rb:
+
 ```
 # validates :content, presence: true, length: { maximum: 140 }
 ```
 
 <h3>Valid submission</h3>
 on app/controllers/micropost_controller.rb
+
 ```
 def create
   ...
@@ -1205,6 +1207,7 @@ def create
 
 <h3>Delete post</h3>
 on app/controllers/micropost_controller.rb:
+
 ```
 def destroy
   @micropost#.destroy
@@ -1212,6 +1215,7 @@ def destroy
 
 <h3>Visit different user (no delete link)</h3>
 on app/views/microposts/\_micropost.html.erb:
+
 ```
 <% #if current_user?(micropost.user) %>
   <%= link_to "delete", micropost, method: :delete,
@@ -1242,3 +1246,231 @@ Yes, it works, as ImageMagick resizes the biggest dimension to the limit and sca
 <b>2. If you completed the image upload test in Listing 13.63, at this point your test suite may be giving you a confusing error message. Fix this issue by configuring CarrierWave to skip image resizing in tests using the initializer file shown in Listing 13.68.</b>
 
 Test were green anyway, but done :P
+
+<h1>Chapter 14</h1>
+<h2>Exercises 14.1.1</h2>
+
+<b>1. For the user with id equal to 1 from Figure 14.7, what would the value of user.following.map(&:id) be? (Recall the map(&:method_name) pattern from Section 4.3.2; user.following.map(&:id) just returns the array of ids.)</b>
+
+The value would be [2, 7, 8, 10]
+
+<b>2. By referring again to Figure 14.7, determine the ids of user.following for the user with id equal to 2. What would the value of user.following.map(&:id) be for this user?</b>
+
+The value would be [1]
+
+<h2>Exercises 14.1.2</h2>
+
+<b>1. Using the create method from Table 14.1 in the console, create an active relationship for the first user in the database where the followed id is the second user.</b>
+
+```
+>> User.first.active_relationships.create!(followed_id: User.second.id)
+```
+
+<b>2. Confirm that the values for active_relationship.followed and active_relationship.follower are correct.</b>
+
+```
+>> Relationship.first.follower
+=> #<User id: 1, ...
+>> Relationship.first.followed
+=> #<User id: 2, ...
+```
+
+<h2>Exercises 14.1.4</h2>
+
+<b>1. At the console, replicate the steps shown in Listing 14.9.</b>
+
+Replicated, details below.
+
+<b>2. What is the SQL for each of the commands in the previous exercise?</b>
+
+First user load:
+```
+>> f = User.first
+  User Load (0.3ms)  SELECT  "users".* FROM "users" ORDER BY "users"."id" ASC LIMIT ?  [["LIMIT", 1]]
+```
+Second user load:
+```
+>> s = User.second
+  User Load (0.3ms)  SELECT  "users".* FROM "users" ORDER BY "users"."id" ASC LIMIT ? OFFSET ?  [["LIMIT", 1], ["OFFSET", 1]]
+```
+Is first user following the second user?
+```
+>> f.following?(s)
+  User Exists (0.6ms)  SELECT  1 AS one FROM "users" INNER JOIN "relationships" ON "users"."id" = "relationships"."followed_id" WHERE "relationships"."follower_id" = ? AND "users"."id" = ? LIMIT ?  [["follower_id", 1], ["id", 2], ["LIMIT", 1]]
+=> false
+```
+First user will then follow the second user:
+```
+>> f.follow(s)
+  SQL (1.3ms)  INSERT INTO "relationships" ("follower_id", "followed_id", "created_at", "updated_at") VALUES (?, ?, ?, ?)  [["follower_id", 1], ["followed_id", 2], ["created_at", 2017-04-15 20:26:37 UTC], ["updated_at", 2017-04-15 20:26:37 UTC]]
+```
+Did it work?
+```
+>> f.following?(s)
+=> true
+```
+Nah, unfollow him! :P
+```
+>> f.unfollow(s)
+  SQL (4.4ms)  DELETE FROM "relationships" WHERE "relationships"."follower_id" = ? AND "relationships"."followed_id" = 2  [["follower_id", 1]]
+```
+Is he following now?
+```
+>> f.following?(s)
+=> false
+```
+
+<h2>Exercises 14.1.5</h2>
+
+<b>1. At the console, create several followers for the first user in the database (which you should call user). What is the value of user.followers.map(&:id)?</b>
+
+>> user.followers.map(&:id)
+  User Load (2.3ms)  SELECT "users".* FROM "users" INNER JOIN "relationships" ON "users"."id" = "relationships"."follower_id" WHERE "relationships"."followed_id" = ?  [["followed_id", 1]]
+=> [2, 3, 101]
+
+<b>2. Confirm that user.followers.count matches the number of followers you created in the previous exercise.</b>
+
+>> user.followers.count
+   (0.2ms)  SELECT COUNT(\*) FROM "users" INNER JOIN "relationships" ON "users"."id" = "relationships"."follower_id" WHERE "relationships"."followed_id" = ?  [["followed_id", 1]]
+=> 3
+
+<b>3. What is the SQL used by user.followers.count? How is this different from user.followers.to_a.count? Hint: Suppose that the user had a million followers.</b>
+
+The latter uses only one SQL query, saving the result to a cache on the server and returning as needed. If there's a million followers, it saves database requests and thus, time.
+
+<h2>Exercises 14.2.1</h2>
+
+<b>1. Using the console, confirm that User.first.followers.count matches the value expected from Listing 14.14.</b>
+
+>> User.first.followers.count
+  User Load (0.2ms)  SELECT  "users".* FROM "users" ORDER BY "users"."id" ASC LIMIT ?  [["LIMIT", 1]]
+   (0.2ms)  SELECT COUNT(\*) FROM "users" INNER JOIN "relationships" ON "users"."id" = "relationships"."follower_id" WHERE "relationships"."followed_id" = ?  [["followed_id", 1]]
+=> 38
+
+<b>2. Confirm that User.first.following.count is correct as well.</b>
+
+>> User.first.following.count
+  User Load (0.4ms)  SELECT  "users".* FROM "users" ORDER BY "users"."id" ASC LIMIT ?  [["LIMIT", 1]]
+   (0.4ms)  SELECT COUNT(\*) FROM "users" INNER JOIN "relationships" ON "users"."id" = "relationships"."followed_id" WHERE "relationships"."follower_id" = ?  [["follower_id", 1]]
+=> 49
+
+<h2>Exercises 14.2.2</h2>
+
+<b>1. Verify that /users/2 has a follow form and that /users/5 has an unfollow form. Is there a follow form on /users/1?</b>
+
+All confirmed and there's no follow form on /users/1 because it's the same user logged in!
+
+<b>2. Confirm in the browser that the stats appear correctly on the Home page and on the profile page.</b>
+
+Correct!
+
+<b>3. Write tests for the stats on the Home page. Hint: Add to the test in Listing 13.28. Why don’t we also have to test the stats on the profile page?</b>
+
+Included "assert_select 'div.stats'" on site_layout_test. Also added to users_profile_test. This exercise sounded confusing... Anyway I "wrote tests for the stats on home page" as asked first and "added to the test users_profile_test" as hinted.
+
+<h2>Exercises 14.2.3</h2>
+
+<b>1. Verify in a browser that /users/1/followers and /users/1/following work. Do the image links in the sidebar work as well?</b>
+
+All links are working.
+
+<b>2. Comment out the application code needed to turn the assert_select tests in Listing 14.29 red to confirm they’re testing the right thing.</b>
+
+Commented lines:
+
+```ruby
+def following
+  @title = "Following"
+  @user  = User.find(params[:id])
+  #@users = @user.following.paginate(page: params[:page])
+  render 'show_follow'
+end
+
+def followers
+  @title = "Followers"
+  @user  = User.find(params[:id])
+  #@users = @user.followers.paginate(page: params[:page])
+  render 'show_follow'
+end
+```
+
+<h2>Exercises 14.2.4</h2>
+
+<b>1. Follow and unfollow /users/2 through the web. Did it work?</b>
+
+Works beautifully.
+
+<b>2. According to the server log, which templates are rendered in each case?</b>
+
+When follow button is clicked, server logged:
+
+```
+Rendered users/_unfollow.html.erb (6.2ms)
+Rendered users/_follow_form.html.erb (12.2ms)
+...
+Rendered users/show.html.erb within layouts/application (60.6ms)
+Rendered layouts/_rails_default.html.erb (75.3ms)
+Rendered layouts/_shim.html.erb (0.3ms)
+Rendered layouts/_header.html.erb (0.9ms)
+Rendered layouts/_footer.html.erb (0.4ms)
+```
+
+On the other hand, when unfollow button is clicked, server shows:
+
+```
+Rendered users/_follow.html.erb (5.4ms)
+Rendered users/_follow_form.html.erb (12.2ms)
+...
+Rendered users/show.html.erb within layouts/application (60.6ms)
+Rendered layouts/_rails_default.html.erb (75.3ms)
+Rendered layouts/_shim.html.erb (0.3ms)
+Rendered layouts/_header.html.erb (0.9ms)
+Rendered layouts/_footer.html.erb (0.4ms)
+
+```
+
+<h2>Exercises 14.2.5</h2>
+
+<b>1. Unfollow and refollow /users/2 through the web. Did it work?</b>
+
+Worked aswell.
+
+<b>2. According to the server log, which templates are rendered in each case?</b>
+
+This time, only the partials \_unfollow/\_follow area rendered. The complete layout is the same rendered to show initially the page.
+
+<h2>Exercises 14.2.6</h2>
+
+<b>1. By commenting and uncommenting each of the lines in the respond_to blocks (Listing 14.36), verify that the tests are testing the right things. Which test fails in each case?</b>
+
+The tests return error about an unknown format for each line commented, as Rails doesn't know where to redirect.
+
+<b>2. What happens if you delete one of the occurrences of xhr: true in Listing 14.40? Explain why this is a problem, and why the procedure in the previous exercise would catch it.</b>
+
+Well... Tests using Ajax are never caught, even commenting the 'format.js' line and leaving 'xhr: true' on the test suite. Apparently the requests are thrown at the standard way anyway. Future Guilherme may figure it out, hope Future Diego catches this exception and return an appropriate answer, personally or even through comments in the evaluation Google Sheet :)
+
+<h2>Exercises 14.3.1</h2>
+
+<b>1. Assuming the micropost’s ids are numbered sequentially, with larger numbers being more recent, what would user.feed.map(&:id) return for the feed shown in Figure 14.22? Hint: Recall the default scope from Section 13.1.4.</b>
+
+The command would return an array like: [10, 9, 7, 5, 4, 2, 1].
+
+<h2>Exercises 14.3.2</h2>
+
+<b>1. In Listing 14.44, remove the part of the query that finds the user’s own posts. Which test in Listing 14.42 breaks?</b>
+
+The 'feed should have the right posts' breaks, as expected, because it doesn't have the 'Posts from self' part of test.
+
+<b>2. In Listing 14.44, remove the part of the query that finds the followed users’ posts. Which test in Listing 14.42 breaks?</b>
+
+At this time, the test 'feed should have the right posts' breaks because the 'Posts from followed user' part breaks
+
+<b>3. How could you change the query in Listing 14.44 to have the feed erroneously return microposts of unfollowed users, thereby breaking the third test in Listing 14.42? Hint: Returning all the microposts would do the trick.</b>
+
+Would be as follows:
+
+```ruby
+def feed
+  Micropost.all
+end
+```
