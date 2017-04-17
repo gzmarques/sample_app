@@ -1474,3 +1474,13 @@ def feed
   Micropost.all
 end
 ```
+
+<h2>Exercises 14.3.3</h2>
+
+<b>1. Write an integration test to verify that the first page of the feed appears on the Home page as required. A template appears in Listing 14.49.</b>
+
+Integration test wrote!
+
+<b>2. Note that Listing 14.49 escapes the expected HTML using CGI.escapeHTML (which is closely related to the CGI.escape method we used in Section 11.2.3 to escape URLs). Why is escaping the HTML necessary in this case? Hint: Try removing the escaping and carefully inspect the page source for the micropost content that doesn’t match. Using the search feature of your terminal shell (Cmd-F on Ctrl-F on most systems) to find the word “sorry” may prove particularly helpful.</b>
+
+The micropost.content needs to be escaped to match the response.body raw HTML. If not, no matches are found because the content has special characters and the body has not.
